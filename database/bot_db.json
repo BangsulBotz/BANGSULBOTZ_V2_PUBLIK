@@ -1,0 +1,7 @@
+{
+  "botSettings": {
+    "self": false,
+    "anticall": true
+  },
+  "trusted": []
+}

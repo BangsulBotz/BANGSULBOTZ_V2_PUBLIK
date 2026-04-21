@@ -1,0 +1,29 @@
+{
+  "name": "bangsulbotz",
+  "version": "2.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@google/genai": "latest",
+    "archiver": "latest",
+    "axios": "latest",
+    "baileys": "latest",
+    "better-sqlite3": "latest",
+    "chalk": "latest",
+    "cheerio": "latest",
+    "exceljs": "latest",
+    "file-type": "latest",
+    "fluent-ffmpeg": "latest",
+    "jimp": "latest",
+    "node-cache": "latest",
+    "node-webpmux": "latest",
+    "qrcode-terminal": "latest",
+    "yt-search": "latest"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
