@@ -104,8 +104,7 @@ export default config;
 
 ```
 ./database/
-├── database/
-│   └── bot_db.json         ← data fitur per grup (welcome, setinfo, anticall, trust, dll)
+├── database/               ← data fitur per grup (welcome, setinfo, anticall, trust, dll)
 └── store/                  ← raw message store
 ```
 
