@@ -128,7 +128,6 @@ const stmtUpdate = db.prepare(`
 export function updateFromMessage(key, pushName) {
     if (!pushName || pushName === 'Unknown') return;
 
-    // 1. Ambil kandidat JID dari berbagai properti key
     const remoteJid = normalizeJid(key.remoteJid);
     const remoteJidAlt = key.remoteJidAlt ? normalizeJid(key.remoteJidAlt) : null;
     const participantAlt = key.participantAlt ? normalizeJid(key.participantAlt) : null;
@@ -196,11 +195,9 @@ export function saveBotProfile(botData) {
                 updated_at = excluded.updated_at
         `).run(cleanJid, name, cleanLid);
 
-        // Update Cache
         nameCache.set(cleanJid, name);
         if (cleanLid) nameCache.set(cleanLid, name);
         
-        // Log Lengkap & Rapih
         console.log(chalk.black.bgGreen(' DATABASE SYNC SUCCESS '));
         console.log(chalk.cyan('┌─ Name : ') + chalk.white(name));
         console.log(chalk.cyan('├─ JID  : ') + chalk.yellow(cleanJid) + chalk.gray(' (Clean)'));
