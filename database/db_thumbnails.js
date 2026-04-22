@@ -162,7 +162,6 @@ export const initThumbnails = async (sock) => {
         }
     }
 
-    // 2. Favicon
     if (listThumbs('favicon').length === 0 && config.faviconUrl?.length) {
         for (let i = 0; i < config.faviconUrl.length; i++) {
             await uploadAndSaveThumb(sock, config.faviconUrl[i], `favicon${i + 1}`, 'favicon');
