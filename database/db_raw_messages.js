@@ -10,9 +10,6 @@ if (!fs.existsSync(STORE_DIR)) fs.mkdirSync(STORE_DIR, { recursive: true });
 
 const db = new Database(dbPath);
 
-// --- [ 1. SCHEMA & MIGRATION SETUP ] ---
-
-// Pastikan tabel ada dulu (versi minimal)
 db.exec(`
   PRAGMA journal_mode = WAL;
   PRAGMA synchronous = NORMAL;
@@ -32,7 +29,6 @@ db.exec(`
   );
 `);
 
-// MIGRASI: Tambah kolom jika belum ada
 const tableInfo = db.prepare("PRAGMA table_info(raw_messages)").all();
 const columns = tableInfo.map(c => c.name);
 
@@ -43,7 +39,6 @@ if (!columns.includes('msg_type')) {
     db.exec(`ALTER TABLE raw_messages ADD COLUMN msg_type TEXT DEFAULT 'unknown'`);
 }
 
-// Baru buat INDEX setelah kolom dipastikan ada
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_msg_id ON raw_messages(msg_id);
   CREATE INDEX IF NOT EXISTS idx_chat_ts ON raw_messages(chat_id, timestamp DESC);
@@ -72,7 +67,6 @@ function getMessageType(rawMsg) {
     return type || 'unknown';
 }
 
-// --- [ 2. CORE FUNCTIONS ] ---
 
 export function saveRawMessage(rawMsg) {
     if (!rawMsg?.key?.remoteJid || !rawMsg?.key?.id) return null;
@@ -167,7 +161,6 @@ export function getMessagesByJid(jid, limit = 1000) {
     }).filter(msg => msg !== null);
 }
 
-// --- [ 3. ANALYTICS FUNCTIONS ] ---
 
 export function getTopActive(jid, limit = 10) {
     const chatId = getChatId(jid);
@@ -187,7 +180,6 @@ export function getUserWrapped(jid, senderJid) {
     `).all(chatId, senderJid);
 }
 
-// --- [ 4. MAINTENANCE ] ---
 
 export function optimizeDatabase() {
     try {
@@ -203,9 +195,6 @@ export function pruneMessages(days = 30) {
     return result.changes;
 }
 
-/**
- * Fitur: Top Active Member dengan Rentang Waktu
- */
 export function getTopActiveByTime(jid, startTs, endTs, limit = 10) {
     const chatId = getChatId(jid);
     if (!chatId) return [];
@@ -220,9 +209,6 @@ export function getTopActiveByTime(jid, startTs, endTs, limit = 10) {
     `).all(chatId, startTs, endTs, limit);
 }
 
-/**
- * Mendapatkan timestamp pesan tertua di sebuah grup
- */
 export function getOldestMessageTimestamp(jid) {
     const chatId = getChatId(jid);
     if (!chatId) return null;
