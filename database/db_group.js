@@ -4,7 +4,6 @@ import path from 'path';
 const dbPath = path.join(process.cwd(), 'database', 'database', 'groups.db');
 const db = new Database(dbPath);
 
-// Cache sederhana untuk performa (opsional)
 const cache = new Map();
 
 const DEFAULT_ACTION = { status: false, delete: false, kick: false };
@@ -15,9 +14,7 @@ const DEFAULT_CONFIG = {
     setinfo: 0,
     welcome: 0,
     antidelete: 0,
-    infolabel:0,
     autogemini:0,
-    antihidetag: JSON.stringify(DEFAULT_ACTION),
     antilinkall: JSON.stringify(DEFAULT_ACTION),
     antisticker: JSON.stringify(DEFAULT_ACTION),
     antilinkgc: JSON.stringify(DEFAULT_ACTION),
@@ -49,7 +46,6 @@ function initDb() {
 }
 
 initDb();
-// FORCE ADD INFOLABEL JIKA BELUM ADA (jalankan setiap start untuk safety)
 try {
     const columns = db.prepare("PRAGMA table_info(groups)").all().map(c => c.name);
     if (!columns.includes('infolabel')) {
@@ -65,7 +61,6 @@ try {
 export function getGroupSetting(groupJid, key) {
     if (!groupJid?.endsWith('@g.us')) return false;
 
-    // Cek Cache dulu
     if (cache.has(groupJid + key)) return cache.get(groupJid + key);
 
     let row = db.prepare("SELECT * FROM groups WHERE jid = ?").get(groupJid);
@@ -81,22 +76,17 @@ export function getGroupSetting(groupJid, key) {
 
     let res = row[key];
 
-    // Parsing JSON jika perlu
     if (typeof res === 'string' && res.startsWith('{')) {
         try { res = JSON.parse(res); } catch (e) {}
     } else if (res === 0 || res === 1) {
         res = !!res;
     }
 
-    // Simpan di cache sebentar (misal 5 detik)
     cache.set(groupJid + key, res);
     setTimeout(() => cache.delete(groupJid + key), 5000);
 
     return res;
 }
-/**
- * Mengambil nama grup (subject) dari database
- */
 export function getGroupName(groupJid) {
     if (!groupJid?.endsWith('@g.us')) return 'Unknown Group';
     const row = db.prepare("SELECT subject FROM groups WHERE jid = ?").get(groupJid);
@@ -112,7 +102,6 @@ export function setGroupSetting(groupJid, key, value) {
 
     db.prepare(`UPDATE groups SET ${key} = ? WHERE jid = ?`).run(finalValue, groupJid);
     
-    // Hapus cache agar data terbaru dibaca nanti
     cache.delete(groupJid + key);
     return true;
 }
