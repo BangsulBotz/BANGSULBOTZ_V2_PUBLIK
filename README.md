@@ -172,8 +172,8 @@ Owner dapat memberikan kepercayaan kepada user tertentu untuk mengakses fitur sp
 
 | Command | Fungsi |
 |---|---|
-| `trust @user fitur` | Berikan akses fitur tertentu ke user |
-| `untrust @user fitur` | Cabut akses fitur dari user |
+| `trust <fitur> (reply)` | Berikan akses fitur tertentu ke user |
+| `untrust <index dari listtrust>` | Cabut akses fitur dari user |
 | `listtrust` | Lihat daftar user beserta fitur yang dipercaya |
 
 Cara kerja: user yang di-trust hanya bisa menggunakan fitur yang secara eksplisit diberikan. Di luar fitur tersebut, akses tetap dibatasi seperti biasa. Cocok untuk mendelegasikan akses tanpa menjadikan user sebagai owner penuh.
