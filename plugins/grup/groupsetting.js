@@ -1,5 +1,5 @@
+import config from '../../settings.js';
 import { getGroupSetting } from '../../database/db_group.js'; 
-import { getThumbInfo } from '../../database/db_thumbnails.js'; 
 
 export default {
     command: 'grupsetting',
@@ -19,7 +19,7 @@ export default {
                 'antitagall', 'antiswgc'
             ];
 
-            let statusGroupText = `https://github.com/BangsulBotz\n⚙️ *PENGATURAN GRUP*\n`;
+            let statusGroupText = `${config.sourceUrl}\n⚙️ *PENGATURAN GRUP*\n`;
             statusGroupText += `*Grup:* ${msg.groupMetadata?.subject || 'WhatsApp Group'}\n`;
             statusGroupText += `*JID:* ${chatJid}\n`;
             statusGroupText += `──────────────────\n\n`;
@@ -47,49 +47,16 @@ export default {
             statusGroupText += `\n──────────────────\n`;
             statusGroupText += `*Ubah:* \`${msg.prefix}antilinkall on kick\``;
 
-            const thumbData = getThumbInfo('grupset');
-
-            const extendedText = {
+            await sock.sendWithThumbnail(msg.chat, {
                 text: statusGroupText,
-                matchedText: "https://github.com/BangsulBotz",
                 title: `GROUP CONFIGURATION`,
-                previewType: 1,
-                inviteLinkGroupTypeV2: 0,
-            };
-
-            if (thumbData) {
-                extendedText.jpegThumbnail       = thumbData.jpegThumbnail;
-                extendedText.thumbnailDirectPath = thumbData.thumbnailDirectPath;
-                extendedText.thumbnailSha256     = thumbData.thumbnailSha256;
-                extendedText.thumbnailEncSha256  = thumbData.thumbnailEncSha256;
-                extendedText.mediaKey            = thumbData.mediaKey;
-                extendedText.mediaKeyTimestamp   = thumbData.mediaKeyTimestamp;
-                extendedText.thumbnailHeight     = thumbData.thumbnailHeight;
-                extendedText.thumbnailWidth      = thumbData.thumbnailWidth;
-            }
-
-            const content = {
-                extendedTextMessage: {
-                    ...extendedText,
-                    contextInfo: {
-                        mentionedJid: [msg.sender],
-                        groupMentions: [],
-                        statusAttributions: [],
-                        stanzaId: msg.key?.id || "",
-                        participant: msg.key?.participant || msg.sender,
-                        quotedMessage: {
-                            conversation: msg.body || "grupsetting"
-                        },
-                        quotedType: 0
-                    }
-                },
-                messageContextInfo: {
-                    threadId: [],
-                    messageSecret: "Q0cK7hFXIAyohGHDou6yKS3NYVtnhjgDwLFvo82LSf0="
-                }
-            };
-
-            await sock.relayMessage(chatJid, content, { quoted: msg });
+                body: msg.groupMetadata?.subject || config.botName,
+                thumbnailName: config.randomThumbnail,
+                faviconName: config.randomFavicon,
+                sourceUrl: config.sourceUrl,
+                renderLargerThumbnail: true,
+                mentions: [msg.sender]
+            }, msg);
 
         } catch (err) {
             console.error('Error GroupSettings:', err);
