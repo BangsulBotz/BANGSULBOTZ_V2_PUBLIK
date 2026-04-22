@@ -145,7 +145,7 @@ Thumbnail mendukung tiga mode tampilan:
 - **Portrait** — gambar vertikal penuh
 - **Kotak** — aspek rasio 1:1
 
-Thumbnail dan favicon dipilih acak dari daftar di `settings.js`. Bisa tambah URL sebanyak yang diinginkan di array `thumbnailUrls` dan `faviconUrl`.
+Thumbnail dan favicon dipilih sesuai nama atau acak dari daftar di `settings.js`. Bisa tambah URL sebanyak yang diinginkan di array `thumbnailUrls` dan `faviconUrl`.
 
 ---
 
