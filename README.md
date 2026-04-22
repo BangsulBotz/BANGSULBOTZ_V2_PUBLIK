@@ -15,11 +15,16 @@ Fast response, modular plugin system, dan siap pakai. 🚀_
 - 🎯 Custom prefix & no-prefix mode
 - 👑 Owner & admin control
 - 🧠 Support API (Gemini, dll)
-- 🖼️ Random thumbnail & favicon system (support portrait & favicon)
-- 🗄️ SQLite database via better-sqlite3 (fast, efficient, WAL mode)
-- 🔐 Auth session tersimpan di SQLite — tidak perlu creds.json
-- 📢 Welcome & leave message dengan canvas image
-- 🛡️ Group log system (setinfo, ephemeral, promote, demote, dll)
+- 🖼️ Thumbnail fleksibel — support landscape, portrait, dan kotak (bukan externalAdReply)
+- 🗄️ SQLite database via better-sqlite3 (WAL mode, fast & efficient)
+- 🔐 Auth session tersimpan di SQLite — tidak perlu `creds.json`
+- 📢 Welcome & leave message dengan canvas image generatif
+- 🛡️ Group log system (setinfo, ephemeral, promote, demote, foto grup, dll)
+- 📦 Group metadata store — fetch sekali, update dari event (anti rate-limit)
+- 📵 Anticall per grup
+- 🔇 Antiprivate chat per grup
+- 🔑 Trust system — berikan akses fitur tertentu ke user tertentu
+- 🧹 Log bersih — bebas dari buffer session/Baileys noise, mudah debug
 
 ---
 
@@ -96,23 +101,84 @@ export default config;
 
 ---
 
-## 🗄️ Database System
+## 🗄️ Struktur Database
 
-Bot menggunakan dua sistem database:
-
-**SQLite** — untuk session auth Baileys:
 ```
-/session/auth.db
-```
-
-**JSON** — untuk data bot (grup, fitur, dll):
-```
-/database/database/bot_db.json
+./database/
+├── database/
+│   └── bot_db.json         ← data fitur per grup (welcome, setinfo, anticall, trust, dll)
+└── store/                  ← raw message store
 ```
 
-Keduanya auto-create jika belum ada ✅
+```
+./session/
+└── auth.db                 ← session auth Baileys (SQLite, jangan dihapus)
+```
 
-Session auth tersimpan permanen di SQLite. Tidak perlu backup `creds.json` secara manual — cukup jaga file `auth.db`.
+Semua file auto-create jika belum ada ✅
+
+Session auth tersimpan permanen di `auth.db`. Tidak perlu backup `creds.json` — cukup jaga file tersebut agar tidak terhapus.
+
+---
+
+## 📦 Group Metadata Store
+
+Bot hanya melakukan fetch penuh ke WhatsApp **satu kali** — saat pesan pertama dari grup tersebut masuk. Setelah itu metadata disimpan di store (Map in-memory) dan tidak di-fetch ulang ke WA.
+
+Pembaruan store dilakukan secara lokal berdasarkan event yang masuk:
+
+| Event | Aksi di Store |
+|---|---|
+| `group-participants.update` | Update daftar member (add/remove/promote/demote) |
+| `groups.update` | Update nama, deskripsi, pengaturan grup |
+| `chats.update` | Update ephemeral setting |
+
+Ini mencegah `rate-overlimit` akibat terlalu sering request metadata ke server WA.
+
+---
+
+## 🖼️ Thumbnail System
+
+Bot menggunakan wrapper thumbnail custom — **bukan** `externalAdReply` bawaan Baileys yang terbatas landscape saja.
+
+Thumbnail mendukung tiga mode tampilan:
+
+- **Landscape** — gambar horizontal biasa
+- **Portrait** — gambar vertikal penuh
+- **Kotak** — aspek rasio 1:1
+
+Thumbnail dan favicon dipilih acak dari daftar di `settings.js`. Bisa tambah URL sebanyak yang diinginkan di array `thumbnailUrls` dan `faviconUrl`.
+
+---
+
+## 📢 Group Event System
+
+Semua fitur grup bisa diatur **per grup** menggunakan command yang tersedia.
+
+| Event | Fitur yang perlu aktif |
+|---|---|
+| Member join / leave (+ canvas image) | `welcome` atau `setinfo` |
+| Ganti nama, deskripsi, pengaturan grup | `setinfo` |
+| Promote / demote admin | `setinfo` |
+| Perubahan ephemeral (pesan sementara) | `setinfo` |
+| Ganti foto profil grup | `setinfo` |
+| Perubahan label member | `setinfo` |
+| Tolak panggilan masuk | `anticall` |
+| Tolak pesan dari private chat | `antiprivate` |
+
+---
+
+## 🔑 Trust System
+
+Owner dapat memberikan kepercayaan kepada user tertentu untuk mengakses fitur spesifik yang biasanya dibatasi.
+
+| Command | Fungsi |
+|---|---|
+| `trust @user fitur` | Berikan akses fitur tertentu ke user |
+| `untrust @user fitur` | Cabut akses fitur dari user |
+| `listtrust` | Lihat daftar user beserta fitur yang dipercaya |
+
+Cara kerja: user yang di-trust hanya bisa menggunakan fitur yang secara eksplisit diberikan. Di luar fitur tersebut, akses tetap dibatasi seperti biasa. Cocok untuk mendelegasikan akses tanpa menjadikan user sebagai owner penuh.
 
 ---
 
@@ -146,33 +212,6 @@ export default {
 
 ---
 
-## 🖼️ Thumbnail System
-
-Bot mendukung thumbnail dinamis dengan dua mode:
-
-- **Portrait thumbnail** — gambar vertikal untuk tampilan penuh
-- **Favicon thumbnail** — ikon kecil dari URL sumber
-
-Thumbnail dipilih secara acak dari daftar yang ada di `settings.js`. Bisa tambah URL sebanyak yang diinginkan di array `thumbnailUrls` dan `faviconUrl`.
-
----
-
-## 📢 Group Event System
-
-Bot otomatis mengirim notifikasi untuk event grup berikut (jika fitur diaktifkan):
-
-| Event | Fitur |
-|---|---|
-| Member join / leave (+ canvas image) | `welcome` atau `setinfo` |
-| Ganti nama, deskripsi, foto grup | `setinfo` |
-| Promote / demote admin | `setinfo` |
-| Pesan sementara (ephemeral) | `setinfo` |
-| Perubahan label member | `setinfo` |
-
-Aktifkan per grup dengan command `.setwelcome` dan `.setinfo`.
-
----
-
 ## 🚀 Menjalankan Bot
 
 ```bash
@@ -190,6 +229,7 @@ Scan QR atau gunakan pairing code sesuai config. Setelah terhubung, session ters
 - Ganti API key jika diperlukan
 - Hindari spam agar tidak kena banned WhatsApp
 - Jangan hapus folder `/session` — berisi data login bot
+- File `auth.db` adalah satu-satunya file yang perlu dijaga untuk session
 
 ---
 
@@ -198,7 +238,7 @@ Scan QR atau gunakan pairing code sesuai config. Setelah terhubung, session ters
 💻 Developer: **BangsulBotz**
 
 - 🔗 Repo: [github.com/BangsulBotz/BANGSULBOTZ_V2_PUBLIK](https://github.com/BangsulBotz/BANGSULBOTZ_V2_PUBLIK)
-- 👥 Grup: [Furry Angelina](https://chat.whatsapp.com/HjDJzwSBZQW0cLYbJorXP2)
+- 👥 Grup: [Furry Angelina — Join Sekarang](https://chat.whatsapp.com/HjDJzwSBZQW0cLYbJorXP2)
 
 ---
 
