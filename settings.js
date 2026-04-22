@@ -1,9 +1,9 @@
 import { getRandomThumb, getRandomFavicon, getRandomThumbnailName, getRandomFaviconName } from './database/db_thumbnails.js';
 const config = {
     ownerName: "ghofar",
-    owner: "6282268881337",
+    owner: "6281234567890",  //nomor owner
     botName: "bangsulbotz",
-    botNumber: "6281266021317",
+    botNumber: "6281234567890",  //nomor bog nya wajib di isi. 
     prefixes: [".", "#", "!", "/"],
     pairing: true,
     noprefix: true,
