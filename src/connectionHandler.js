@@ -136,7 +136,6 @@ Jam     : ${timeNyala} WIB\`\`\`
 async function printConnectionSuccessAndLoad(sock, plugins, pluginsDir) {
     const user = sock.user || {};
 
-    // ✅ FIX: gunakan global.botJid yang sudah di-set di handleConnectionUpdate
     const jid = global.botJid || normalizeJidBot(user.id);
 
     const number = jid.split('@')[0] || config.botNumber;
@@ -145,7 +144,6 @@ async function printConnectionSuccessAndLoad(sock, plugins, pluginsDir) {
     const device = user.device || 'tidak terdeteksi';
     const timeNow = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
 
-    // Save to database
     saveBotProfile({
         jid: jid,
         name: name,
@@ -168,7 +166,6 @@ async function printConnectionSuccessAndLoad(sock, plugins, pluginsDir) {
     console.log(chalk.green.bold('\nBot online & siap! Kirim pesan tes ke nomor bot.'));
     console.log(chalk.green.bold('══════════════════════════════════════════════════════'));
 
-    // Load Plugins
     console.log(chalk.cyan('📦 Memuat plugins...'));
     const initialResult = await loadPlugins(pluginsDir);
 
