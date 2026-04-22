@@ -113,7 +113,7 @@ async function handlePairingCode(sock) {
         const formattedCode = pairingCode?.match(/.{1,4}/g)?.join('-') || pairingCode;
 
         console.log(chalk.bgGreen.black('\n   KODE PAIRING ANDA:   '));
-        console.log(chalk.bgWhite.black.bold(`      ${formattedCode}      `));
+        console.log(chalk.bgYellow.black.bold(`      ${formattedCode}      `));
         console.log(chalk.yellow('\n1. Buka WA > Perangkat Tertaut > Tautkan Perangkat'));
         console.log(chalk.yellow('2. Pilih "Tautkan dengan nomor telepon saja"'));
         console.log(chalk.yellow('3. Masukkan kode di atas.\n'));
