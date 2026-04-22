@@ -18,7 +18,6 @@ Fast response, modular plugin system, dan siap pakai. 🚀_
 - 🖼️ Thumbnail fleksibel — support landscape, portrait, dan kotak (bukan externalAdReply)
 - 🗄️ SQLite database via better-sqlite3 (WAL mode, fast & efficient)
 - 🔐 Auth session tersimpan di SQLite — tidak perlu `creds.json`
-- 📢 Welcome & leave message dengan canvas image generatif
 - 🛡️ Group log system (setinfo, ephemeral, promote, demote, foto grup, dll)
 - 📦 Group metadata store — fetch sekali, update dari event (anti rate-limit)
 - 📵 Anticall per grup
