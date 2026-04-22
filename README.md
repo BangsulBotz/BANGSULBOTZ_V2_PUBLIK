@@ -151,8 +151,8 @@ _Scan QR / gunakan pairing code sesuai config 🔑_
 
 ## 👑 Credit
 
-> 💻 Developer: FgsiDev
-- 🔗 Repo: https://github.com/FgsiDev/BANGSULBOTZ_V2_PUBLIK
+> 💻 Developer: BangsulBotz
+- 🔗 Repo: https://github.com/BangsulBotz/BANGSULBOTZ_V2_PUBLIK
 
 ---
 
