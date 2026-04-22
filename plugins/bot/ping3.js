@@ -15,7 +15,6 @@ export default {
     for (let i = 1; i <= 10; i++) {
       const start = process.hrtime.bigint();
 
-      // Bangun teks dengan daftar latency yang sudah ada
       let text = `🏓 Ping ke-${i}/10\n`;
       if (results.length > 0) {
         text += results.map((r, idx) => `${idx + 1}. ${r} ms`).join('\n') + '\n';
@@ -37,7 +36,6 @@ export default {
     const endTotal = process.hrtime.bigint();
     const totalMs = Number((endTotal - startTotal) / 1_000_000n);
 
-    // Edit final dengan hasil lengkap
     const finalText = `🏓 Ping 10x selesai!\n` +
                       `Total waktu: ${totalMs} ms\n\n` +
                       `Daftar latency per edit:\n` +
